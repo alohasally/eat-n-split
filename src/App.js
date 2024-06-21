@@ -32,6 +32,11 @@ function Button({ children, onClick }) {
 export default function App() {
   const [friends, setFriends] = useState(initialFriends);
   const [selectedFriend, setSelectedFriend] = useState(null);
+  const [showAddFriend, setShowAddFriend] = useState(false);
+
+  const handleShowAddFriend = () => {
+    setShowAddFriend(() => !showAddFriend);
+  };
 
   const handleSelectedFriend = (friend) => {
     setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
@@ -40,6 +45,7 @@ export default function App() {
 
   const handleAddFriend = (friend) => {
     setFriends((cur) => [...cur, friend]);
+    setShowAddFriend(false);
   };
 
   return (
@@ -50,8 +56,12 @@ export default function App() {
           selectedFriend={selectedFriend}
           onSelected={handleSelectedFriend}
         />
-        <FormAddFriend onAddFriend={handleAddFriend} />
+        {showAddFriend ? <FormAddFriend onAddFriend={handleAddFriend} /> : ""}
+        <Button onClick={handleShowAddFriend}>
+          {showAddFriend ? "Close" : "Add Friend"}
+        </Button>
       </div>
+      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
     </div>
   );
 }
@@ -117,10 +127,37 @@ function FormAddFriend({ onAddFriend }) {
           <span>🎆</span>image URL
         </label>
         <input value={image}></input>
+        <Button onClick={handleSubmit}>Add</Button>
       </form>
-      <Button onClick={handleSubmit}>Add</Button>
     </>
   );
 }
 
-// function FormSplitBill() {}
+function FormSplitBill({ selectedFriend }) {
+  console.log("selectedFriend", selectedFriend);
+  return (
+    <form className="form-split-bill">
+      <h2>SPLIT A BILL WITH ANTHONY</h2>
+      <label>
+        <span>💰</span>Bill value
+      </label>
+      <input type="text"></input>
+      <label>
+        <span>🧍🏻‍♀️</span>Your expense
+      </label>
+      <input type="text"></input>
+      <label>
+        <span>👫</span>
+        {selectedFriend.name}'s expense
+      </label>
+      <input type="text"></input>
+      <label>
+        <span>🤑</span>Who is paying the bill
+      </label>
+      <select>
+        <option>you</option>
+        <option>{selectedFriend.name}</option>
+      </select>
+    </form>
+  );
+}
