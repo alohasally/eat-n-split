@@ -31,11 +31,12 @@ function Button({ children, onClick }) {
 
 export default function App() {
   const [friends, setFriends] = useState(initialFriends);
-  const [selectedFriend, setSelectedFriend] = useState("");
+  const [selectedFriend, setSelectedFriend] = useState(null);
 
-  const handleSelectedFriend = (id) => {
-    setSelectedFriend((cur) => (cur?.id === id ? null : friends));
+  const handleSelectedFriend = (friend) => {
+    setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
   };
+  console.log("selectedFriend", selectedFriend);
 
   const handleAddFriend = (friend) => {
     setFriends((cur) => [...cur, friend]);
@@ -56,32 +57,33 @@ export default function App() {
 }
 
 function FriendsList({ friends, selectedFriend, onSelected }) {
-  <ul>
-    {friends.map((friend) => (
-      <Friend
-        key={friend.id}
-        friend={friend}
-        selectedFriend={selectedFriend}
-        onSelected={onSelected}
-      />
-    ))}
-  </ul>;
+  return (
+    <ul>
+      {friends.map((friend) => (
+        <Friend
+          key={friend.id}
+          friend={friend}
+          selectedFriend={selectedFriend}
+          onSelected={onSelected}
+        />
+      ))}
+    </ul>
+  );
 }
 
 function Friend({ friend, selectedFriend, onSelected }) {
-  const isSelected = selectedFriend.id === friend.id;
+  const isSelected = selectedFriend?.id === friend.id;
 
   return (
-    <li
-      className={isSelected ? "selected" : ""}
-      onClick={() => onSelected(friend.id)}
-    >
+    <li className={isSelected ? "selected" : ""}>
       <img src={friend.image} alt={friend.name} />
       <div>
         <h3>{friend.name}</h3>
         <p>You Owe name </p>
       </div>
-      <Button>{isSelected ? "Select" : "Close"}</Button>
+      <Button onClick={() => onSelected(friend)}>
+        {isSelected ? "Close" : "Select"}
+      </Button>
     </li>
   );
 }
@@ -107,8 +109,14 @@ function FormAddFriend({ onAddFriend }) {
   return (
     <>
       <form className="form-add-friend">
-        <label>Frined Name</label>
+        <label>
+          <span>👫</span>Frined Name
+        </label>
         <input onChange={(e) => setName(e.target.value)}></input>
+        <label>
+          <span>🎆</span>image URL
+        </label>
+        <input value={image}></input>
       </form>
       <Button onClick={handleSubmit}>Add</Button>
     </>
